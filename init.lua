@@ -41,8 +41,8 @@ P.S. You can delete this when you're done too. It's your config now :)
 -- Set <space> as the leader key
 -- See `:help mapleader`
 --  NOTE: Must happen before plugins are required (otherwise wrong leader will be used)
-vim.g.mapleader = ' '
-vim.g.maplocalleader = ' '
+vim.g.mapleader = ','
+vim.g.maplocalleader = ','
 
 -- [[ Install `lazy.nvim` plugin manager ]]
 --    https://github.com/folke/lazy.nvim
@@ -72,6 +72,12 @@ require('lazy').setup({
   -- Git related plugins
   'tpope/vim-fugitive',
   'tpope/vim-rhubarb',
+
+  -- Show errors
+  'dense-analysis/ale',
+
+  -- Toggle comments
+  'preservim/nerdcommenter',
 
   -- Detect tabstop and shiftwidth automatically
   'tpope/vim-sleuth',
@@ -191,10 +197,10 @@ require('lazy').setup({
 
   {
     -- Theme inspired by Atom
-    'navarasu/onedark.nvim',
+    'thnikk/nord-thnikk',
     priority = 1000,
     config = function()
-      vim.cmd.colorscheme 'onedark'
+      vim.cmd.colorscheme 'nord'
     end,
   },
 
@@ -205,7 +211,7 @@ require('lazy').setup({
     opts = {
       options = {
         icons_enabled = false,
-        theme = 'onedark',
+        theme = 'nord',
         component_separators = '|',
         section_separators = '',
       },
@@ -310,6 +316,10 @@ vim.o.completeopt = 'menuone,noselect'
 -- NOTE: You should make sure your terminal supports this
 vim.o.termguicolors = true
 
+-- Custom settings
+vim.cmd "set noshowmode"
+vim.cmd "set noswapfile"
+
 -- [[ Basic Keymaps ]]
 
 -- Keymaps for better default experience
@@ -325,6 +335,30 @@ vim.keymap.set('n', '[d', vim.diagnostic.goto_prev, { desc = 'Go to previous dia
 vim.keymap.set('n', ']d', vim.diagnostic.goto_next, { desc = 'Go to next diagnostic message' })
 vim.keymap.set('n', '<leader>e', vim.diagnostic.open_float, { desc = 'Open floating diagnostic message' })
 vim.keymap.set('n', '<leader>q', vim.diagnostic.setloclist, { desc = 'Open diagnostics list' })
+
+-- Custom keymaps
+vim.keymap.set('n', '<leader>r', ':set nu! norelativenumber!<cr>', { desc = 'Toggle line numbers' })
+vim.keymap.set('n', '<leader>g', ':Gitsigns toggle_signs<cr>', { desc = 'Toggle line numbers' })
+
+-- [[ Save on write ]]
+vim.api.nvim_create_autocmd({"BufWritePost"}, {
+  pattern = '*/.config/sway/*',
+  command = "!swaymsg reload",
+})
+vim.api.nvim_create_autocmd({"BufWritePost"}, {
+  pattern = '*/.config/mako/*',
+  command = "!makoctl reload",
+})
+vim.api.nvim_create_autocmd({"BufWritePost"}, {
+  pattern = { '*/.config/waybar/*', '*/bin/bar/*' },
+  command = "!killall -SIGUSR2 waybar",
+})
+
+-- [[ Add line length indicator for python ]]
+vim.api.nvim_create_autocmd({"FileType"}, {
+  pattern = 'python',
+  command = "setlocal colorcolumn=80",
+})
 
 -- [[ Highlight on yank ]]
 -- See `:help vim.highlight.on_yank()`
@@ -656,6 +690,11 @@ cmp.setup {
     { name = 'path' },
   },
 }
+
+vim.cmd("hi Normal guibg=NONE ctermbg=NONE")
+vim.cmd("hi SignColumn guibg=NONE ctermbg=NONE")
+vim.cmd("hi LineNr guibg=NONE ctermbg=NONE")
+vim.cmd("hi NonText guibg=NONE ctermbg=NONE")
 
 -- The line beneath this is called `modeline`. See `:help modeline`
 -- vim: ts=2 sts=2 sw=2 et
