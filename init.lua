@@ -1,46 +1,3 @@
---[[
-
-=====================================================================
-==================== READ THIS BEFORE CONTINUING ====================
-=====================================================================
-
-Kickstart.nvim is *not* a distribution.
-
-Kickstart.nvim is a template for your own configuration.
-  The goal is that you can read every line of code, top-to-bottom, understand
-  what your configuration is doing, and modify it to suit your needs.
-
-  Once you've done that, you should start exploring, configuring and tinkering to
-  explore Neovim!
-
-  If you don't know anything about Lua, I recommend taking some time to read through
-  a guide. One possible example:
-  - https://learnxinyminutes.com/docs/lua/
-
-
-  And then you can explore or search through `:help lua-guide`
-  - https://neovim.io/doc/user/lua-guide.html
-
-
-Kickstart Guide:
-
-I have left several `:help X` comments throughout the init.lua
-You should run that command and read that help section for more information.
-
-In addition, I have some `NOTE:` items throughout the file.
-These are for you, the reader to help understand what is happening. Feel free to delete
-them once you know what you're doing, but they should serve as a guide for when you
-are first encountering a few different constructs in your nvim config.
-
-I hope you enjoy your Neovim journey,
-- TJ
-
-P.S. You can delete this when you're done too. It's your config now :)
---]]
-
--- Set <space> as the leader key
--- See `:help mapleader`
---  NOTE: Must happen before plugins are required (otherwise wrong leader will be used)
 vim.g.mapleader = ','
 vim.g.maplocalleader = ','
 
@@ -61,11 +18,6 @@ end
 vim.opt.rtp:prepend(lazypath)
 
 -- [[ Configure plugins ]]
--- NOTE: Here is where you install your plugins.
---  You can configure plugins using the `config` key.
---
---  You can also configure plugins after the setup call,
---    as they will be available in your neovim runtime.
 require('lazy').setup({
   -- NOTE: First, some plugins that don't require any configuration
 
@@ -196,7 +148,6 @@ require('lazy').setup({
   },
 
   {
-    -- Theme inspired by Atom
     'thnikk/nord-thnikk',
     priority = 1000,
     config = function()
@@ -285,12 +236,16 @@ vim.o.hlsearch = false
 -- Make line numbers default
 vim.wo.number = true
 
+-- And set relative line numbers
+vim.wo.relativenumber = true
+
+-- Add confirmation dialog
+vim.o.confirm = true
+
 -- Enable mouse mode
 vim.o.mouse = 'a'
 
 -- Sync clipboard between OS and Neovim.
---  Remove this option if you want your OS clipboard to remain independent.
---  See `:help 'clipboard'`
 vim.o.clipboard = 'unnamedplus'
 
 -- Enable break indent
@@ -317,7 +272,9 @@ vim.o.completeopt = 'menuone,noselect'
 vim.o.termguicolors = true
 
 -- Custom settings
+-- Hide mode in command line
 vim.cmd "set noshowmode"
+-- Disable swap file
 vim.cmd "set noswapfile"
 
 -- [[ Basic Keymaps ]]
@@ -338,7 +295,13 @@ vim.keymap.set('n', '<leader>q', vim.diagnostic.setloclist, { desc = 'Open diagn
 
 -- Custom keymaps
 vim.keymap.set('n', '<leader>r', ':set nu! norelativenumber!<cr>', { desc = 'Toggle line numbers' })
-vim.keymap.set('n', '<leader>g', ':Gitsigns toggle_signs<cr>', { desc = 'Toggle line numbers' })
+vim.keymap.set('n', '<leader>g', ':Gitsigns toggle_signs<cr>', { desc = 'Toggle git signs' })
+
+-- Fix keybinds
+vim.keymap.set('n', 'd', '"_d')
+vim.keymap.set('v', 'd', '"_d')
+vim.keymap.set('c', 'd', '"_c')
+vim.keymap.set('x', 'p', '"_dP')
 
 -- [[ Save on write ]]
 vim.api.nvim_create_autocmd({"BufWritePost"}, {
@@ -690,11 +653,6 @@ cmp.setup {
     { name = 'path' },
   },
 }
-
-vim.cmd("hi Normal guibg=NONE ctermbg=NONE")
-vim.cmd("hi SignColumn guibg=NONE ctermbg=NONE")
-vim.cmd("hi LineNr guibg=NONE ctermbg=NONE")
-vim.cmd("hi NonText guibg=NONE ctermbg=NONE")
 
 -- The line beneath this is called `modeline`. See `:help modeline`
 -- vim: ts=2 sts=2 sw=2 et
