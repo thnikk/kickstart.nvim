@@ -300,7 +300,7 @@ vim.keymap.set('n', '<leader>g', ':Gitsigns toggle_signs<cr>', { desc = 'Toggle 
 -- Fix keybinds
 vim.keymap.set('n', 'd', '"_d')
 vim.keymap.set('v', 'd', '"_d')
-vim.keymap.set('c', 'd', '"_c')
+vim.keymap.set('n', 'c', '"_c')
 vim.keymap.set('x', 'p', '"_dP')
 
 -- [[ Save on write ]]
