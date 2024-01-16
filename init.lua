@@ -34,6 +34,14 @@ require('lazy').setup({
   -- Detect tabstop and shiftwidth automatically
   'tpope/vim-sleuth',
 
+  -- Markdown Preview
+  {
+    "iamcco/markdown-preview.nvim",
+    cmd = { "MarkdownPreviewToggle", "MarkdownPreview", "MarkdownPreviewStop" },
+    ft = { "markdown" },
+    build = function() vim.fn["mkdp#util#install"]() end,
+  },
+
   -- NOTE: This is where your plugins related to LSP can be installed.
   --  The configuration is done below. Search for lspconfig to find it below.
   {
@@ -271,11 +279,18 @@ vim.o.completeopt = 'menuone,noselect'
 -- NOTE: You should make sure your terminal supports this
 vim.o.termguicolors = true
 
+-- Wrap lines at words
+vim.wo.wrap = true
+vim.wo.linebreak = true
+vim.wo.list = true
+
 -- Custom settings
 -- Hide mode in command line
 vim.cmd "set noshowmode"
 -- Disable swap file
 vim.cmd "set noswapfile"
+-- Disable auto-comments
+vim.cmd([[autocmd FileType * set formatoptions-=ro]])
 
 -- [[ Basic Keymaps ]]
 
@@ -284,8 +299,10 @@ vim.cmd "set noswapfile"
 vim.keymap.set({ 'n', 'v' }, '<Space>', '<Nop>', { silent = true })
 
 -- Remap for dealing with word wrap
-vim.keymap.set('n', 'k', "v:count == 0 ? 'gk' : 'k'", { expr = true, silent = true })
-vim.keymap.set('n', 'j', "v:count == 0 ? 'gj' : 'j'", { expr = true, silent = true })
+vim.keymap.set('n', '<Up>', "v:count == 0 ? 'gk' : 'k'", { expr = true, silent = true })
+vim.keymap.set('n', '<Down>', "v:count == 0 ? 'gj' : 'j'", { expr = true, silent = true })
+vim.keymap.set('i', '<Up>', "v:count == 0 ? '<C-o>gk' : 'k'", { expr = true, silent = true })
+vim.keymap.set('i', '<Down>', "v:count == 0 ? '<C-o>gj' : 'j'", { expr = true, silent = true })
 
 -- Diagnostic keymaps
 vim.keymap.set('n', '[d', vim.diagnostic.goto_prev, { desc = 'Go to previous diagnostic message' })
@@ -296,6 +313,10 @@ vim.keymap.set('n', '<leader>q', vim.diagnostic.setloclist, { desc = 'Open diagn
 -- Custom keymaps
 vim.keymap.set('n', '<leader>r', ':set nu! norelativenumber!<cr>', { desc = 'Toggle line numbers' })
 vim.keymap.set('n', '<leader>g', ':Gitsigns toggle_signs<cr>', { desc = 'Toggle git signs' })
+vim.keymap.set('n', '<leader>b', 'ggO#!/usr/bin/env sh<down><esc>:w<cr>:!chmod +x %<cr>', { desc = 'Add sh shebang to top of file' })
+vim.keymap.set('n', '<leader>p', 'ggO#!/usr/bin/python3 -u<cr>"""<cr>Author: thnikk<cr>"""<down><esc>:w<cr>:!chmod +x %<cr>', { desc = 'Add python shebang to top of file' })
+vim.keymap.set('n', '<leader>o', ':setlocal spell! spelllang=en_us<CR>')
+vim.keymap.set('n', '<leader>i', 'gg=G')
 
 -- Fix keybinds
 vim.keymap.set('n', 'd', '"_d')
@@ -316,6 +337,13 @@ vim.api.nvim_create_autocmd({"BufWritePost"}, {
   pattern = { '*/.config/waybar/*', '*/bin/bar/*' },
   command = "!killall -SIGUSR2 waybar",
 })
+
+-- [[ Fix cursor on exit ]]
+vim.api.nvim_create_autocmd("ExitPre", {
+	group = vim.api.nvim_create_augroup("Exit", { clear = true }),
+	command = "set guicursor=a:ver90",
+	desc = "Set cursor back to beam when leaving Neovim."
+}) 
 
 -- [[ Add line length indicator for python ]]
 vim.api.nvim_create_autocmd({"FileType"}, {
@@ -562,7 +590,7 @@ require('mason-lspconfig').setup()
 local servers = {
   -- clangd = {},
   -- gopls = {},
-  -- pyright = {},
+  pyright = {},
   -- rust_analyzer = {},
   -- tsserver = {},
   -- html = { filetypes = { 'html', 'twig', 'hbs'} },
@@ -615,9 +643,9 @@ cmp.setup {
       luasnip.lsp_expand(args.body)
     end,
   },
-  completion = {
-    completeopt = 'menu,menuone,noinsert',
-  },
+  --completion = {
+    --completeopt = 'menu,menuone,noinsert',
+  --},
   mapping = cmp.mapping.preset.insert {
     ['<C-n>'] = cmp.mapping.select_next_item(),
     ['<C-p>'] = cmp.mapping.select_prev_item(),
@@ -626,7 +654,7 @@ cmp.setup {
     ['<C-Space>'] = cmp.mapping.complete {},
     ['<CR>'] = cmp.mapping.confirm {
       behavior = cmp.ConfirmBehavior.Replace,
-      select = true,
+      select = false,
     },
     ['<Tab>'] = cmp.mapping(function(fallback)
       if cmp.visible() then
