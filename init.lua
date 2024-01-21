@@ -314,7 +314,7 @@ vim.keymap.set('n', '<leader>q', vim.diagnostic.setloclist, { desc = 'Open diagn
 vim.keymap.set('n', '<leader>r', ':set nu! norelativenumber!<cr>', { desc = 'Toggle line numbers' })
 vim.keymap.set('n', '<leader>g', ':Gitsigns toggle_signs<cr>', { desc = 'Toggle git signs' })
 vim.keymap.set('n', '<leader>b', 'ggO#!/usr/bin/env sh<down><esc>:w<cr>:!chmod +x %<cr>', { desc = 'Add sh shebang to top of file' })
-vim.keymap.set('n', '<leader>p', 'ggO#!/usr/bin/python3 -u<cr>"""<cr>Author: thnikk<cr>"""<down><esc>:w<cr>:!chmod +x %<cr>', { desc = 'Add python shebang to top of file' })
+vim.keymap.set('n', '<leader>p', 'ggO#!/usr/bin/python3 -u<cr>"""<cr>Description:<cr>Author:<cr>"""<down><esc>:w<cr>:!chmod +x %<cr>', { desc = 'Add python shebang to top of file' })
 vim.keymap.set('n', '<leader>o', ':setlocal spell! spelllang=en_us<CR>')
 vim.keymap.set('n', '<leader>i', 'gg=G')
 
